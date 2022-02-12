@@ -2,16 +2,16 @@ require './card'
 
 class Deck
   attr_accessor :deck
-  
+
   SUITS = %w(Hearts Diamonds Spades Clubs)
   VALUES = %w(2 3 4 5 6 7 8 9 10 Jack Queen King Ace)
-  
+
   def initialize
-    @deck = new_deck
+    new_deck
   end
-  
+
   def new_deck
-    deck = []
+    self.deck = []
     SUITS.each do |suit|
       VALUES.each do |value|
         deck << Card.new(value, suit)
@@ -19,7 +19,7 @@ class Deck
     end
     deck.shuffle!
   end
-  
+
   def deal(participant)
     participant.hit(deck.pop)
   end
