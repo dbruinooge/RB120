@@ -1,11 +1,28 @@
 require './participant'
+require './betable'
 
 class HumanPlayer < Participant
+  include Betable
+  
+  INITIAL_BANKROLL = 1000
+  
   attr_reader :name
   
   def initialize
     super
     @name = 'Derek'
+    @bankroll = INITIAL_BANKROLL
+  end
+
+  def make_bet
+    chosen_bet = 0
+    loop do
+      puts "Please enter the amount you'd like to bet (1-#{@bankroll}):"
+      chosen_bet = gets.chomp.to_i
+      break if chosen_bet.between?(1, @bankroll)
+      puts "Sorry, that's not a valid bet."
+    end
+    @bet = chosen_bet
   end
 end
 
