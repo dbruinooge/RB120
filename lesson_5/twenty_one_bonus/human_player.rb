@@ -3,7 +3,7 @@ require './betable'
 
 class HumanPlayer < Participant
   include Betable
-  
+
   INITIAL_BANKROLL = 1000
 
   def initialize
@@ -25,12 +25,12 @@ class HumanPlayer < Participant
 
   def display_bet_prompt
     puts ""
-    puts "You have #{@bankroll}. Please enter the amount "\
+    puts "You have $#{@bankroll}. Please enter the amount "\
          "you'd like to bet (1-#{@bankroll}):"
   end
 
   def hit?(dealer_first_card_total)
-    return false if total == 21
+    return false if total == MAX_SCORE
     loop do
       display_hit_prompt(dealer_first_card_total)
       choice = gets.chomp.downcase

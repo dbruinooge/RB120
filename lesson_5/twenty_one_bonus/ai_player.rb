@@ -3,10 +3,10 @@ require './betable'
 
 class AIPlayer < Participant
   include Betable
-  
+
   INITIAL_BANKROLL = 1000
-  
-  def self.get_names
+
+  def self.load_names_from_file
     name_list = []
     names = File.open("ai_names.txt")
     names.each do |line|
@@ -14,15 +14,12 @@ class AIPlayer < Participant
     end
     name_list
   end
-  
-  @@name_list = get_names
-  @@taken_names = []
+
+  @@name_list = load_names_from_file
 
   def initialize
     super
-    possible_names = @@name_list.reject {|name| @@taken_names.include?(name) }
-    @name = possible_names.sample
-    @@taken_names << @name
+    @name = @@name_list.shuffle!.pop
     @bankroll = INITIAL_BANKROLL
   end
 
@@ -31,25 +28,24 @@ class AIPlayer < Participant
   end
 
   def hit?(dealer_first_card_total)
-    case
-    when total <= 11
-      return true
-    when total.between?(12, 16) && dealer_first_card_total.between?(7, 11)
-      return true
-    when ace_and_six?
-      return true
+    if total <= 11
+      true
+    elsif total.between?(12, 16) && dealer_first_card_total.between?(7, 11)
+      true
+    elsif ace_and_six?
+      true
     else
-      return false
+      false
     end
   end
 
   private
 
   def hand_values
-    hand.map { |card| card.value }
+    hand.map(&:value)
   end
 
   def ace_and_six?
-    hand_values.include?('Ace') && hand_values.include?('6')
+    hand_values.include?('A') && hand_values.include?('6')
   end
 end

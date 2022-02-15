@@ -12,7 +12,6 @@ Katy Perry
 Justin Timberlake
 Jay Leno
 David Letterman
-Elle McPherson
 Jennifer Aniston
 Johnny Depp
 Brittney Spears
@@ -28,7 +27,6 @@ Jack Nicholson
 Kevin Spacey
 Kylie Minogue
 Roger Federer
-Andrew Murray
 Serena Williams
 Brad Pitt
 Simon Cowell
@@ -76,7 +74,6 @@ Michael Jordan
 Mark Twain
 Nicole Kidman
 Barack Obama
-Hugh Heffner
 JK Rowling
 Bill Clinton
 Elizabeth Taylor
@@ -87,7 +84,6 @@ Stephen Hawking
 Tom Hanks
 Oprah Winfrey
 Beyonce
-Hilary Clinton
 Dr Suess
 Ray Charles
 Sean Connery
@@ -109,5 +105,5 @@ Mae West
 Snoop Dogg
 Jim Carrey
 Michael J Fox
-Yuna Kim
+Kim Yuna
 Son Heung-min

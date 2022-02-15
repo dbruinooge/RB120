@@ -1,24 +1,15 @@
-require 'pry'
 require './deck'
 require './human_player'
 require './dealer'
 require './ai_player'
 require './printable'
 
-#
-#
-#
-# REMINDER TO SELF
-# GET RID OF MAGIC NUMBERS
-# AND ASSIGN THEM TO CONSTANTS
-#
-#
-#
-
 class Game
-  include Printable
-  
+  include Displayable
+
   DEALER_STANDS = 17
+  MIN_AI_PLAYERS = 0
+  MAX_AI_PLAYERS = 7
 
   def initialize
     display_welcome_message
@@ -45,20 +36,26 @@ class Game
   def initialize_ai_players(number)
     players = []
     return players if number == 0
-    number.times {players << AIPlayer.new}
+    number.times { players << AIPlayer.new }
     players
   end
 
   def how_many_ai_players
     choice = nil
     loop do
-      puts ""
-      puts "How many AI players will be joining you at the table? (0-7)"
+      prompt_number_of_ai_players
       choice = gets.chomp
-      break unless choice =~ /\D/ || !choice.to_i.between?(0, 7)
+      break unless choice =~ /\D/ ||
+                   !choice.to_i.between?(MIN_AI_PLAYERS, MAX_AI_PLAYERS)
       puts "Sorry, that's not a valid choice."
     end
     choice.to_i
+  end
+
+  def prompt_number_of_ai_players
+    puts ""
+    puts "How many AI players will be joining you at the table? "\
+         "(#{MIN_AI_PLAYERS}-#{MAX_AI_PLAYERS})"
   end
 
   def prepare_round
@@ -67,7 +64,7 @@ class Game
   end
 
   def collect_bets
-    players.each {|player| player.make_bet}
+    players.each(&:make_bet)
   end
 
   def deal_cards
@@ -87,7 +84,7 @@ class Game
   end
 
   def play_cards(player)
-   loop do
+    loop do
       display_game_state_and_clear
       break unless player.hit?(dealer.first_card_total)
       hit(player)
@@ -97,7 +94,7 @@ class Game
   end
 
   def start_turn(player)
-    name = (player == human_player) ? 'you' : player.name
+    name = player == human_player ? 'you' : player.name
     puts "The dealer turns to #{name}."
     press_enter_and_clear
   end
@@ -119,13 +116,7 @@ class Game
 
   def hit(participant)
     deck.deal(participant)
-    show_hit(participant)
-  end
-  
-  def show_hit(participant)
-    name = (participant == human_player) ? 'you' : participant.name
-    puts "#{name} takes a card. It's the #{participant.hand.last}!"
-    press_enter_and_clear
+    display_hit(participant)
   end
 
   def finish_round
@@ -166,7 +157,7 @@ class Game
   end
 
   def everyone_busted?
-    players.all? {|player| player.busted?}
+    players.all?(&:busted?)
   end
 
   def play_again?
@@ -189,14 +180,15 @@ class Game
 
   def remove(player)
     puts ""
-    puts "All out of money, #{player.name} leaves the table and walks away sadly."
+    puts "All out of money, #{player.name} leaves the table "\
+         "and walks away sadly."
     players.delete(player)
   end
 
   def reset
     deck.new_deck
     dealer.discard_hand
-    players.each { |player| player.discard_hand }
+    players.each(&:discard_hand)
   end
 
   attr_reader :deck, :human_player, :dealer, :players

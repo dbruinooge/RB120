@@ -9,7 +9,7 @@ module Betable
   def collect_winnings
     @bankroll += bet
   end
-  
+
   def broke?
     @bankroll <= 0
   end
