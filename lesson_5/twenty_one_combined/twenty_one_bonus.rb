@@ -1,4 +1,6 @@
 module Displayable
+  private
+
   def display_welcome_message
     system 'clear'
     puts "Welcome to Twenty-One!"
@@ -167,6 +169,12 @@ class Game
     end
   end
 
+  def start_turn(player)
+    name = player == human_player ? 'you' : player.name
+    puts "The dealer turns to #{name}."
+    press_enter_and_clear
+  end
+
   def play_cards(player)
     loop do
       display_game_state_and_clear
@@ -175,12 +183,6 @@ class Game
       break if player.busted?
     end
     display_turn_result(player)
-  end
-
-  def start_turn(player)
-    name = player == human_player ? 'you' : player.name
-    puts "The dealer turns to #{name}."
-    press_enter_and_clear
   end
 
   def dealer_turn
@@ -250,7 +252,7 @@ class Game
       puts ""
       puts "Would you like to play again? (y/n)"
       choice = gets.chomp.downcase
-      break if %w(y n).include?(choice)
+      break if %w(y yes n no).include?(choice)
       puts "Sorry, invalid choice."
     end
     choice == 'y'
@@ -269,7 +271,7 @@ class Game
   def identify_broke_players
     players.each_with_object([]) do |player, broke_players|
       if (player.broke?) && player != @human_player
-        broke_players << player 
+        broke_players << player
       end
     end
   end
@@ -412,12 +414,6 @@ class HumanPlayer < Participant
     @bet = chosen_bet
   end
 
-  def display_bet_prompt
-    puts ""
-    puts "You have $#{@bankroll}. Please enter the amount "\
-         "you'd like to bet (1-#{@bankroll}):"
-  end
-
   def hit?(dealer_first_card_total)
     return false if total == MAX_SCORE
     loop do
@@ -427,11 +423,6 @@ class HumanPlayer < Participant
       return false if ['s', 'stand'].include?(choice)
       puts "Sorry, that's not a valid choice."
     end
-  end
-
-  def display_hit_prompt(dealer_first_card_total)
-    puts "You have #{total} and the dealer is showing "\
-    "#{dealer_first_card_total}. Would you like to (h)it or (s)tand?"
   end
 
   private
@@ -445,6 +436,17 @@ class HumanPlayer < Participant
       puts "Sorry, that's not a valid name."
     end
     choice
+  end
+
+  def display_bet_prompt
+    puts ""
+    puts "You have $#{@bankroll}. Please enter the amount "\
+         "you'd like to bet (1-#{@bankroll}):"
+  end
+
+  def display_hit_prompt(dealer_first_card_total)
+    puts "You have #{total} and the dealer is showing "\
+    "#{dealer_first_card_total}. Would you like to (h)it or (s)tand?"
   end
 end
 
@@ -493,9 +495,9 @@ class AIPlayer < Participant
   end
 
   def ace_and_six?
-    hand_values.include?('A') && 
-    hand_values.include?('6') &&
-    hand.size == 2
+    hand_values.include?('A') &&
+      hand_values.include?('6') &&
+      hand.size == 2
   end
 end
 
