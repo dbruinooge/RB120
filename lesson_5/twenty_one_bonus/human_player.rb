@@ -5,12 +5,10 @@ class HumanPlayer < Participant
   include Betable
   
   INITIAL_BANKROLL = 1000
-  
-  attr_reader :name
-  
+
   def initialize
     super
-    @name = get_name
+    @name = set_name
     @bankroll = INITIAL_BANKROLL
   end
 
@@ -26,50 +24,28 @@ class HumanPlayer < Participant
     @bet = chosen_bet
   end
 
+  def hit?(dealer_first_card_total)
+    return false if total == 21
+    loop do
+      puts "You have #{total} and the dealer is showing "\
+           "#{dealer_first_card_total}. Would you like to hit? (y/n)"
+      choice = gets.chomp.downcase
+      return true if ['y', 'yes'].include?(choice)
+      return false if ['n', 'no'].include?(choice)
+      puts "Sorry, that's not a valid choice."
+    end
+  end
+
   private
 
-  def get_name
+  def set_name
     choice = nil
     loop do
       puts "What's your name?"
       choice = gets.chomp
-      break unless choice.nil?
+      break unless choice.empty?
       puts "Sorry, that's not a valid name."
     end
     choice
   end
 end
-
-=begin
-
-maybe implement betting after AI players are working, then implement competition (x rounds, winner is person with highest total)
-
-new class, AIPlayer
-game method that initializes all of them and stores in a game instance variable @ai_players []
-  in initialize, maybe @ai_players = initialize_ai_players
-
-after player turn, ai_turn unless @ai_players.empty?
-
-ai_turn, @ai_players.each |player| ai_turn(player) 
-
-ai_turn
- - [choose bet]
-- hit or stand based on basic strategy
-    FIRST: hit if self.hand <= 11
-    Stand when your hand is 12-16 when the dealer has 2-6. 
-    Hit when your hand is 12-16 when the dealer has 7-Ace
-    Always hit Aces-6
-    
-    can use a blank case statement
-    when self.hand < dealer.hand
-      hit
-    when self.hand.between?(12, 16) AND dealer.hand.between?(2, 6)
-      hit
-    when aces_six?
-      hit
-    end
-    
-
-
-
-=end

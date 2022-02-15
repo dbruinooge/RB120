@@ -1,7 +1,7 @@
 class Card
   SUIT_SYMBOLS = {'Hearts' => "\u2665", 'Diamonds' => "\u2666",
                   'Spades' => "\u2660", 'Clubs' => "\u2663"}
-                  
+
   attr_reader :value
 
   def initialize(value, suit)

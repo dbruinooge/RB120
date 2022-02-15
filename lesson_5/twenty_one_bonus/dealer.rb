@@ -1,8 +1,6 @@
 require './participant'
 
 class Dealer < Participant
-  attr_reader :name
-  
   def initialize
     super
     @name = 'Dealer'

@@ -8,7 +8,7 @@ class AIPlayer < Participant
   
   def self.get_names
     name_list = []
-    names = File.open("ai_players.txt")
+    names = File.open("ai_names.txt")
     names.each do |line|
       name_list << line.chomp
     end
@@ -17,9 +17,7 @@ class AIPlayer < Participant
   
   @@name_list = get_names
   @@taken_names = []
-  
-  attr_reader :name
-  
+
   def initialize
     super
     possible_names = @@name_list.reject {|name| @@taken_names.include?(name) }
@@ -28,17 +26,30 @@ class AIPlayer < Participant
     @bankroll = INITIAL_BANKROLL
   end
 
-  def ace_and_six?
-    hand_values.include?('Ace') && hand_values.include?('6')
-  end
-
   def make_bet
     @bet = rand(@bankroll + 1).ceil(-2)
+  end
+
+  def hit?(dealer_first_card_total)
+    case
+    when total <= 11
+      return true
+    when total.between?(12, 16) && dealer_first_card_total.between?(7, 11)
+      return true
+    when ace_and_six?
+      return true
+    else
+      return false
+    end
   end
 
   private
 
   def hand_values
     hand.map { |card| card.value }
+  end
+
+  def ace_and_six?
+    hand_values.include?('Ace') && hand_values.include?('6')
   end
 end

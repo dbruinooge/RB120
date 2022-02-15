@@ -1,7 +1,6 @@
 module Betable
   attr_reader :bankroll, :bet
-  
-  # settle_bet should be in the game class
+
   def settle_bet(dealer_total)
     if busted?
       collect_losses
