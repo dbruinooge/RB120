@@ -13,6 +13,6 @@ class Dealer < Participant
   end
   
   def list_cards
-    hand.size > 2 ? hand.join(', ') : "#{hand.first.to_s}, ?"
+    hand.join(', ')
   end
 end

@@ -20,11 +20,12 @@ require './printable'
 class Game
   include Printable
   
-  def initialize(number_of_ai_players=0)
+  def initialize
+    display_welcome_message
     @deck = Deck.new
     @human_player = HumanPlayer.new
     @dealer = Dealer.new
-    initialize_ai_players(number_of_ai_players)
+    initialize_ai_players(how_many_ai_players)
   end
 
   def start
@@ -36,21 +37,36 @@ class Game
       dealer_turn unless everyone_busted?
       settle_bets
       show_all_results
-      break unless play_again?
+      remove_broke_players
+      break if human_player.broke? || !play_again?
       reset
     end
+    display_goodbye_message
   end
 
   private
 
   def initialize_ai_players(number)
     @ai_players = []
+    return if number == 0
     number.times {@ai_players << AIPlayer.new}
+  end
+
+  def how_many_ai_players
+    choice = nil
+    loop do
+      puts ""
+      puts "How many AI players will be joining you at the table? (0-7)"
+      choice = gets.chomp
+      break unless choice =~ /\D/ || !choice.to_i.between?(0, 7)
+      puts "Sorry, that's not a valid choice."
+    end
+    choice.to_i
   end
 
   def collect_bets
     human_player.make_bet
-    ai_players.each {|ai_player| ai_player.make_bet}
+    ai_players.each {|ai_player| ai_player.make_bet} unless ai_players.empty?
   end
 
   def deal_cards
@@ -64,11 +80,12 @@ class Game
   def human_player_turn
     @player_turns = true
     loop do
-      display_game_state
+      display_game_state_and_clear
       break unless hit?
+      display_game_state_and_clear
       hit(human_player)
       if human_player.busted?
-        display_game_state
+        display_game_state_and_clear
         break
       end
     end
@@ -77,44 +94,55 @@ class Game
   def ai_player_turns
     @player_turns = true
     ai_players.each do |ai_player|
-      display_game_state
+      display_game_state_and_clear
       start_turn(ai_player)
       loop do
+        display_game_state_and_clear
         unless ai_hit?(ai_player)
           puts "#{ai_player.name} stands on #{ai_player.total}!"
           break
         end
         hit(ai_player)
-        display_game_state
-        break if ai_player.busted?
+        display_game_state_and_clear
+        if ai_player.busted?
+          puts "#{ai_player.name} busted!"
+          break
+        end
       end
-      press_enter
+      press_enter_and_clear
     end
   end
 
   def start_turn(ai_player)
     puts "The dealer turns to #{ai_player.name}."
-    press_enter
+    press_enter_and_clear
   end
 
   def dealer_turn
     @player_turns = false
-    display_game_state
+    display_game_state_and_clear
+    puts "The dealer reveals her hidden card. It's the #{dealer.hand.last}!"
+    press_enter_and_clear
     while dealer.total < 17
       hit(dealer)
+      display_game_state_and_clear
     end
-    display_game_state
+    display_game_state_and_clear
   end
 
   def hit?
-    return false if human_player.total == 21
+    if human_player.total == 21
+      puts "You've got 21!"
+      press_enter_and_clear
+      return false
+    end
     loop do
       puts "You have #{human_player.total} and the dealer is showing "\
            "#{dealer.first_card_total}. Would you like to hit? (y/n)"
       choice = gets.chomp.downcase
       return true if ['y', 'yes'].include?(choice)
       return false if ['n', 'no'].include?(choice)
-      puts "Invalid input."
+      puts "Sorry, that's not a valid choice."
     end
   end
 
@@ -138,8 +166,7 @@ class Game
   
   def show_hit(participant)
     puts "#{participant.name} takes a card. It's the #{participant.hand.last}!"
-    puts "#{participant.name} busted!" if participant.busted?
-    press_enter
+    press_enter_and_clear
   end
 
   def show_all_results
@@ -179,6 +206,7 @@ class Game
   def play_again?
     choice = nil
     loop do
+      puts ""
       puts "Would you like to play again? (y/n)"
       choice = gets.chomp.downcase
       break if %w(y n).include?(choice)
@@ -192,6 +220,7 @@ class Game
   end
 
   def remove(player)
+    puts ""
     puts "All out of money, #{player.name} leaves the table and walks away sadly."
     ai_players.delete(player)
   end
@@ -203,12 +232,13 @@ class Game
     ai_players.each { |ai_player| ai_player.discard_hand }
   end
 
-  def press_enter
+  def press_enter_and_clear
     puts "Press ENTER to continue..."
     gets.chomp
+    display_game_state_and_clear
   end
 
   attr_reader :deck, :human_player, :dealer, :ai_players
 end
 
-Game.new(7).start
+Game.new.start

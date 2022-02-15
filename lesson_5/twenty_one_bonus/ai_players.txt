@@ -14,9 +14,6 @@ Jay Leno
 David Letterman
 Elle McPherson
 Jennifer Aniston
-Donald Duck
-Pluto
-Goofy
 Johnny Depp
 Brittney Spears
 Paris Hilton
@@ -34,7 +31,6 @@ Roger Federer
 Andrew Murray
 Serena Williams
 Brad Pitt
-Mickey Mouse
 Simon Cowell
 Ludwig Beethoven
 Warren Buffett
@@ -46,7 +42,6 @@ Henry Ford
 Bill Gates
 Steve Jobs
 Vincent van Gogh
-Adolph Hitler
 Thomas Jefferson
 Stanley Kubrik
 Charles Lindbergh
@@ -112,6 +107,6 @@ Frank Lloyd Wright
 Pamela Anderson
 Susan Boyle
 Mae West
-Snoopy
+Snoop Dogg
 Jim Carrey
 Michael J Fox

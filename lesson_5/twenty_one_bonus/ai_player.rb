@@ -33,7 +33,7 @@ class AIPlayer < Participant
   end
 
   def make_bet
-    @bet = rand(@bankroll + 1).round(-2)
+    @bet = rand(@bankroll + 1).ceil(-2)
   end
 
   private

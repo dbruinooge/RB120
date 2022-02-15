@@ -10,19 +10,33 @@ class HumanPlayer < Participant
   
   def initialize
     super
-    @name = 'Derek'
+    @name = get_name
     @bankroll = INITIAL_BANKROLL
   end
 
   def make_bet
     chosen_bet = 0
     loop do
+      puts ""
       puts "Please enter the amount you'd like to bet (1-#{@bankroll}):"
       chosen_bet = gets.chomp.to_i
       break if chosen_bet.between?(1, @bankroll)
       puts "Sorry, that's not a valid bet."
     end
     @bet = chosen_bet
+  end
+
+  private
+
+  def get_name
+    choice = nil
+    loop do
+      puts "What's your name?"
+      choice = gets.chomp
+      break unless choice.nil?
+      puts "Sorry, that's not a valid name."
+    end
+    choice
   end
 end
 
