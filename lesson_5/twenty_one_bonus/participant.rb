@@ -2,7 +2,9 @@ class Participant
   CARD_VALUES = { '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6,
                 '7' => 7, '8' => 8, '9' => 9, '10' => 10, 'J' => 10,
                 'Q' => 10, 'K' => 10, 'A' => 11 }
-                
+
+  MAX_SCORE = 21
+
   attr_reader :hand, :name
   
   def initialize
@@ -21,7 +23,7 @@ class Participant
     total = 0
     hand.each { |card| total += CARD_VALUES[card.value] }
     aces = hand.select { |card| card.value == 'A' }.count
-    while total > 21 && aces > 0
+    while total > MAX_SCORE && aces > 0
       total -= 10
       aces -= 1
     end
@@ -29,7 +31,7 @@ class Participant
   end
   
   def busted?
-    total > 21
+    total > MAX_SCORE
   end
   
   def discard_hand

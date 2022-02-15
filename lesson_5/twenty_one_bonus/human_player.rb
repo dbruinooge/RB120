@@ -15,8 +15,7 @@ class HumanPlayer < Participant
   def make_bet
     chosen_bet = 0
     loop do
-      puts ""
-      puts "Please enter the amount you'd like to bet (1-#{@bankroll}):"
+      display_bet_prompt
       chosen_bet = gets.chomp.to_i
       break if chosen_bet.between?(1, @bankroll)
       puts "Sorry, that's not a valid bet."
@@ -24,16 +23,26 @@ class HumanPlayer < Participant
     @bet = chosen_bet
   end
 
+  def display_bet_prompt
+    puts ""
+    puts "You have #{@bankroll}. Please enter the amount "\
+         "you'd like to bet (1-#{@bankroll}):"
+  end
+
   def hit?(dealer_first_card_total)
     return false if total == 21
     loop do
-      puts "You have #{total} and the dealer is showing "\
-           "#{dealer_first_card_total}. Would you like to hit? (y/n)"
+      display_hit_prompt(dealer_first_card_total)
       choice = gets.chomp.downcase
-      return true if ['y', 'yes'].include?(choice)
-      return false if ['n', 'no'].include?(choice)
+      return true if ['h', 'hit'].include?(choice)
+      return false if ['s', 'stand'].include?(choice)
       puts "Sorry, that's not a valid choice."
     end
+  end
+
+  def display_hit_prompt(dealer_first_card_total)
+    puts "You have #{total} and the dealer is showing "\
+    "#{dealer_first_card_total}. Would you like to (h)it or (s)tand?"
   end
 
   private

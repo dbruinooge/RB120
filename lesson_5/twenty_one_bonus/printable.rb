@@ -11,7 +11,7 @@ module Printable
          "without going over 21, or 'busting'."
     puts "Each player is dealt two cards, face up."
     puts "The dealer is also dealt two cards, but one of them is face down."
-    puts "On each player's turn, they can choose whether to get another card ('hit') "\
+    puts "On each player's turn, they can choose to take another card ('hit') "\
          "or end their turn ('stand')."
     puts "On the dealer's turn, the dealer must hit until reaching a score of 17 or higher."
     puts ""

@@ -1,23 +1,12 @@
 module Betable
   attr_reader :bankroll, :bet
+  attr_accessor :result
 
-  def settle_bet(dealer_total)
-    if busted?
-      collect_losses
-    elsif dealer_total > 21
-      payout
-    elsif total > dealer_total
-      payout
-    elsif dealer_total > total
-      collect_losses
-    end
-  end
-  
-  def collect_losses
+  def give_up_losses
     @bankroll -= @bet
   end
 
-  def payout
+  def collect_winnings
     @bankroll += bet
   end
   

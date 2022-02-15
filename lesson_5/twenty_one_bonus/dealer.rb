@@ -1,6 +1,8 @@
 require './participant'
 
 class Dealer < Participant
+  DEALER_STANDS = 17
+
   def initialize
     super
     @name = 'Dealer'
@@ -9,7 +11,11 @@ class Dealer < Participant
   def first_card_total
     Participant::CARD_VALUES[hand.first.value]
   end
-  
+
+  def hit?
+    total < DEALER_STANDS
+  end
+
   def list_cards
     hand.join(', ')
   end

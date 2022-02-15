@@ -19,7 +19,6 @@ class Game
   include Printable
   
   DEALER_STANDS = 17
-  HIGHEST_SCORE = 21
 
   def initialize
     display_welcome_message
@@ -31,13 +30,10 @@ class Game
 
   def start
     loop do
-      collect_bets
-      deal_cards
+      prepare_round
       player_turns
       dealer_turn unless everyone_busted?
-      settle_bets
-      show_all_results
-      remove_broke_players
+      finish_round
       break if human_player.broke? || !play_again?
       reset
     end
@@ -63,6 +59,11 @@ class Game
       puts "Sorry, that's not a valid choice."
     end
     choice.to_i
+  end
+
+  def prepare_round
+    collect_bets
+    deal_cards
   end
 
   def collect_bets
@@ -96,20 +97,24 @@ class Game
   end
 
   def start_turn(player)
-    puts "The dealer turns to #{player.name}."
+    name = (player == human_player) ? 'you' : player.name
+    puts "The dealer turns to #{name}."
     press_enter_and_clear
   end
 
   def dealer_turn
     @player_turns = false
-    display_game_state_and_clear
-    puts "The dealer reveals her hidden card. It's the #{dealer.hand.last}!"
-    press_enter_and_clear
-    while dealer.total < DEALER_STANDS
+    reveal_hidden_card
+    while dealer.hit?
       hit(dealer)
-      display_game_state_and_clear
     end
+    display_turn_result(dealer)
+  end
+
+  def reveal_hidden_card
     display_game_state_and_clear
+    puts "Dealer reveals the hidden card. It's the #{dealer.hand.last}!"
+    press_enter_and_clear
   end
 
   def hit(participant)
@@ -118,35 +123,46 @@ class Game
   end
   
   def show_hit(participant)
-    puts "#{participant.name} takes a card. It's the #{participant.hand.last}!"
+    name = (participant == human_player) ? 'you' : participant.name
+    puts "#{name} takes a card. It's the #{participant.hand.last}!"
     press_enter_and_clear
   end
 
-  def show_all_results
-    # press enter to show results
-    players.each {|player| show_result(player)}
+  def finish_round
+    handle_results
+    remove_broke_players
   end
 
-  def show_result(player)
+  def handle_results
+    players.each do |player|
+      if player.busted? || dealer.busted?
+        handle_busted_results(player)
+      elsif player.total != dealer.total
+        handle_point_results(player)
+      else puts "#{player.name} ties the dealer!"
+      end
+    end
+  end
+
+  def handle_busted_results(player)
     if player.busted?
+      player.give_up_losses
       puts "#{player.name} busted!"
     elsif dealer.busted?
+      player.collect_winnings
       puts "#{player.name} wins since the dealer busted!"
-    else
-      display_point_winner(player)
     end
   end
 
-  def display_point_winner(player)
-    case dealer.total <=> player.total
-    when 1 then puts "#{player.name} loses to the dealer on points!"
-    when -1 then puts "#{player.name} beats the dealer on points!"
-    when 0 then puts "#{player.name} ties the dealer!"
+  def handle_point_results(player)
+    case player.total <=> dealer.total
+    when 1
+      puts "#{player.name} beats the dealer on points!"
+      player.collect_winnings
+    when -1
+      puts "#{player.name} loses to the dealer on points!"
+      player.give_up_losses
     end
-  end
-
-  def settle_bets
-    players.each {|player| player.settle_bet(dealer.total)}
   end
 
   def everyone_busted?
@@ -166,13 +182,15 @@ class Game
   end
 
   def remove_broke_players
-    players.each {|player| remove(player) if (player.broke?)}
+    players.each do |player|
+      remove(player) if (player.broke?) && player != @human_player
+    end
   end
 
   def remove(player)
     puts ""
     puts "All out of money, #{player.name} leaves the table and walks away sadly."
-    players.delete(player) unless player == @human_player
+    players.delete(player)
   end
 
   def reset
