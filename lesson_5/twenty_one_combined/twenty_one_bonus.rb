@@ -62,7 +62,7 @@ module Displayable
   def display_goodbye_message
     puts ""
     if human_player.broke?
-      puts "All out of money, you leave the table and walk away sadly."
+      puts "All out of money, you leave the table and sadly walk away."
     else
       puts "You calmly collect your remaining chips worth "\
            "$#{human_player.bankroll} and leave the table."
@@ -92,7 +92,6 @@ end
 class Game
   include Displayable
 
-  DEALER_STANDS = 17
   MIN_AI_PLAYERS = 0
   MAX_AI_PLAYERS = 7
 
@@ -262,7 +261,7 @@ class Game
     broke_players.each do |broke_player|
       puts ""
       puts "All out of money, #{broke_player.name} leaves the table "\
-           "and walks away sadly."
+           "and sadly walks away."
     end
     players.reject! { |player| broke_players.include?(player) }
   end
@@ -273,13 +272,6 @@ class Game
         broke_players << player 
       end
     end
-  end
-
-  def remove(player)
-    puts ""
-    puts "All out of money, #{player.name} leaves the table "\
-         "and walks away sadly."
-    players.delete(player)
   end
 
   def reset
@@ -501,7 +493,9 @@ class AIPlayer < Participant
   end
 
   def ace_and_six?
-    hand_values.include?('A') && hand_values.include?('6')
+    hand_values.include?('A') && 
+    hand_values.include?('6') &&
+    hand.size == 2
   end
 end
 
