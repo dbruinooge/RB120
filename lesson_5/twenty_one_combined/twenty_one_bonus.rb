@@ -76,14 +76,13 @@ end
 
 module Betable
   attr_reader :bankroll, :bet
-  attr_accessor :result
 
   def give_up_losses
     @bankroll -= @bet
   end
 
   def collect_winnings
-    @bankroll += bet
+    @bankroll += @bet
   end
 
   def broke?
@@ -118,6 +117,8 @@ class Game
   end
 
   private
+
+  attr_reader :deck, :human_player, :dealer, :players
 
   def initialize_ai_players(number)
     players = []
@@ -206,22 +207,22 @@ class Game
   end
 
   def finish_round
-    handle_results
+    process_results
     remove_broke_players
   end
 
-  def handle_results
+  def process_results
     players.each do |player|
       if player.busted? || dealer.busted?
-        handle_busted_results(player)
+        process_busted_results(player)
       elsif player.total != dealer.total
-        handle_point_results(player)
+        process_point_results(player)
       else puts "#{player.name} ties the dealer!"
       end
     end
   end
 
-  def handle_busted_results(player)
+  def process_busted_results(player)
     if player.busted?
       player.give_up_losses
       puts "#{player.name} busted!"
@@ -231,7 +232,7 @@ class Game
     end
   end
 
-  def handle_point_results(player)
+  def process_point_results(player)
     case player.total <=> dealer.total
     when 1
       puts "#{player.name} beats the dealer on points!"
@@ -281,8 +282,6 @@ class Game
     dealer.discard_hand
     players.each(&:discard_hand)
   end
-
-  attr_reader :deck, :human_player, :dealer, :players
 end
 
 class Deck
@@ -336,6 +335,8 @@ class Participant
                   'Q' => 10, 'K' => 10, 'A' => 11 }
 
   MAX_SCORE = 21
+  ACE_HIGH_SCORE = 11
+  ACE_LOW_SCORE = 1
 
   attr_reader :hand, :name
 
@@ -356,7 +357,7 @@ class Participant
     hand.each { |card| total += CARD_VALUES[card.value] }
     aces = hand.select { |card| card.value == 'A' }.count
     while total > MAX_SCORE && aces > 0
-      total -= 10
+      total -= (ACE_HIGH_SCORE - ACE_LOW_SCORE)
       aces -= 1
     end
     total
@@ -407,7 +408,9 @@ class HumanPlayer < Participant
     chosen_bet = 0
     loop do
       display_bet_prompt
-      chosen_bet = gets.chomp.to_i
+      # chosen_bet = gets.chomp.to_i
+      chosen_bet = gets.chomp.delete(',').delete_prefix('$')
+                       .delete_suffix("s").delete_suffix(" dollar").to_i
       break if chosen_bet.between?(1, @bankroll)
       puts "Sorry, that's not a valid bet."
     end
