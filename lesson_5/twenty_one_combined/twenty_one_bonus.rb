@@ -435,7 +435,7 @@ class HumanPlayer < Participant
     loop do
       puts "What's your name?"
       choice = gets.chomp
-      break unless choice.empty?
+      break unless choice.strip.empty?
       puts "Sorry, that's not a valid name."
     end
     choice
@@ -453,21 +453,23 @@ class HumanPlayer < Participant
   end
 end
 
+module FileLoad
+  def self.file_lines_to_array(filename)
+    array = []
+    lines = File.open(filename)
+    lines.each do |line|
+      array << line.chomp
+    end
+    array
+  end
+end
+
 class AIPlayer < Participant
   include Betable
 
   INITIAL_BANKROLL = 1000
 
-  def self.load_names_from_file
-    name_list = []
-    names = File.open("ai_names.txt")
-    names.each do |line|
-      name_list << line.chomp
-    end
-    name_list
-  end
-
-  @@name_list = load_names_from_file
+  @@name_list = FileLoad.file_lines_to_array('ai_names.txt')
 
   def initialize
     super
